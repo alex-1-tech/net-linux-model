@@ -5,3 +5,12 @@ all:
 
 clean:
 	make -C /lib/modules/$(shell uname -r)/build M=$(PWD) clean
+
+install:
+	sudo insmod netmodule.ko
+
+remove:
+	sudo rmmod netmodule
+
+info:
+	modinfo netmodule.ko
