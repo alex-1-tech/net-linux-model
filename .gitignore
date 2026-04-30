@@ -63,3 +63,4 @@ dkms.conf
 
 # bear
 compile_commands.json
+modules.livepatch
