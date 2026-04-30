@@ -1,6 +1,7 @@
 obj-m += netmodule.o
 
 BEAR := $(shell command -v bear 2>/dev/null)
+BUILDDIR := /lib/modules/$(shell uname -r)/build
 
 all:
 ifdef BEAR
@@ -12,10 +13,10 @@ else
 endif
 
 _build:
-	make -C /lib/modules/$(shell uname -r)/build M=$(PWD) modules
+	make -C $(BUILDDIR) M=$(PWD) modules
 
 clean:
-	make -C /lib/modules/$(shell uname -r)/build M=$(PWD) clean
+	make -C $(BUILDDIR) M=$(PWD) clean
 
 install:
 	sudo insmod netmodule.ko
@@ -25,3 +26,16 @@ remove:
 
 info:
 	modinfo netmodule.ko
+
+test-setup:
+	sudo ip link set netmodule0 up
+	sudo ip addr add 10.0.0.1/24 dev netmodule0
+	@echo "Interface configured:"
+	ip addr show netmodule0
+
+test-ping:
+	ping -c 4 10.0.0.1
+
+test-clean:
+	sudo ip addr del 10.0.0.1/24 dev netmodule0 2>/dev/null || true
+	sudo ip link set netmodule0 down 2>/dev/null || true
