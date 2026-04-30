@@ -3,6 +3,7 @@
 
 #include <linux/etherdevice.h>
 #include <linux/netdevice.h>
+#include <linux/if_arp.h> 
 
 static int net_module_open(struct net_device *dev) {
   pr_info("netmodule: open\n");
@@ -66,6 +67,10 @@ static int __init net_module_init(void) {
   net_dev = alloc_netdev(0, "netmodule%d", NET_NAME_UNKNOWN, ether_setup);
   if (!net_dev)
     return -ENOMEM;
+  
+  net_dev->flags |= IFF_LOOPBACK;
+  net_dev->flags |= IFF_NOARP;
+  net_dev->type = ARPHRD_LOOPBACK;
 
   net_dev->netdev_ops = &net_module_netdev_ops;
   eth_hw_addr_random(net_dev);
